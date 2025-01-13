@@ -16,7 +16,7 @@ import jakarta.validation.constraints.Size;
 @Table(name = "tb_postagens") //Indica o nome da tabela no bd 
 public class Postagem {
 
-	@Id 										//Chave primaria(PRIMARY KEY)
+	@Id 					//Chave primaria(PRIMARY KEY)
 	@GeneratedValue(strategy = GenerationType.IDENTITY) //Auto Incremento
 	private Long id;
 	
