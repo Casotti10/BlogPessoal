@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity						//Indica que a classe é uma tabela
@@ -23,7 +24,7 @@ public class Postagem {
 	@Size(min = 5, max = 100, message = "Esse campo é orbigatório.")
 	private String titulo;
 	
-	@NotBlank(message = "Esse campo é orbigatório.") // Not Null
+	@NotNull(message = "Esse campo é orbigatório.") // Not Null
 	@Size(min = 10, max = 100, message = "Esse campo é orbigatório.")
 	private String texto;
 	
