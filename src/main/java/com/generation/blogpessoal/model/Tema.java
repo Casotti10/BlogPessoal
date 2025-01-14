@@ -24,9 +24,9 @@ public class Tema {
 
 	@NotNull(message = "O Atributo Descrição é obrigatório") //Indica que o campo nao pode ser vazio
 	private String descricao; 
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tema", cascade = CascadeType.REMOVE) //Indica que que a classe tema tera uma collection list contendo objetos da classe postagem
-	@JsonIgnoreProperties("tema")
+													//Cascade -> ao remover a entidade principal, as entidades relacionadas também serão removidas automaticamente do banco de dad				
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tema", cascade = CascadeType.REMOVE) //Featch (So pra listar como os dados vao ser adicionado na colletction) 
+	@JsonIgnoreProperties("tema")//evita loop infinito			//mapedBy -> conectando o Tema.postagem com o Postagem.tema												//
 	private List<Postagem> postagem; //Collection que a classe tema vai ter vinculada com a classe Postagens
 
 	public Long getId() {

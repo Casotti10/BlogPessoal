@@ -54,10 +54,10 @@ public class PostagemController{
 	
 	@PostMapping //CRIAR ALGO NOVO E SALVAR NO BD
 	public ResponseEntity<Postagem> post(@Valid @RequestBody Postagem postagem){ //Valida as requisiçoes conforme as regras defifinidas na Model postagem(Not Null)
-		if(temaRepository.existsById(postagem.getTema().getId()))
-			return ResponseEntity.status(HttpStatus.CREATED) //Responde as resquisiçoes HTTP 
+		if(temaRepository.existsById(postagem.getTema().getId())) //Procura o ID do tema, 
+			return ResponseEntity.status(HttpStatus.CREATED) //se existir ele cadastra a nova postagem e retorna o metodo HTTP 200OK
 				.body(postagemRepository.save(postagem));  
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema nao existe!");
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema nao existe!"); //Se nao existir ele rertorna que nao existe
 	} 
 	
 	@PutMapping
