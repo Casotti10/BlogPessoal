@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.blogpessoal.model.Postagem;
 import com.generation.blogpessoal.repository.PostagemRepository;
+import com.generation.blogpessoal.repository.TemaRepository;
 
 import jakarta.validation.Valid;
 
@@ -31,6 +32,9 @@ public class PostagemController{
 	
 	@Autowired //O Spring da autonomia para a Interface invocar os metodos 
 	private PostagemRepository postagemRepository;
+	
+	@Autowired 
+	private TemaRepository temaRepository; 
 	
 	@GetMapping // mapea solicitações HTTP do tipo GET para um método específico em um controlado
 	public ResponseEntity<List<Postagem>> getAll(){  //Indica que esse metodo e chamado em Verbos/Metodos
@@ -48,26 +52,33 @@ public class PostagemController{
 		return ResponseEntity.ok (postagemRepository.findAllByTituloContainingIgnoreCase(titulo)); //Busca no BD usando tudo que tem na tabela titulo em forma de lista 
 	}
 	
-	@PostMapping 
+	@PostMapping //CRIAR ALGO NOVO E SALVAR NO BD
 	public ResponseEntity<Postagem> post(@Valid @RequestBody Postagem postagem){ //Valida as requisiçoes conforme as regras defifinidas na Model postagem(Not Null)
-		return ResponseEntity.status(HttpStatus.CREATED) //Responde as resquisiçoes HTTP 
+		if(temaRepository.existsById(postagem.getTema().getId()))
+			return ResponseEntity.status(HttpStatus.CREATED) //Responde as resquisiçoes HTTP 
 				.body(postagemRepository.save(postagem));  
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema nao existe!");
 	} 
 	
-	@PutMapping 
-	public ResponseEntity<Postagem> put (@Valid @RequestBody Postagem postagem){ // Se a postagem for encontrada (método map executado):
-		return postagemRepository.findById(postagem.getId()) // Se a postagem for encontrada (método map executado):
-				.map(resposta -> ResponseEntity.status(HttpStatus.OK)// Atualiza a postagem no repositório e retorna uma resposta com o status 200 (OK)
-						.body(postagemRepository.save(postagem))) 
-				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build()); // Se a postagem não for encontrada, retorna o status 404 (NOT FOUND).
-	} 
+	@PutMapping
+	public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem) {
+	    if (postagemRepository.existsById(postagem.getId())) {
+	        
+	    	if (temaRepository.existsById(postagem.getTema().getId())) 
+	            return ResponseEntity.status(HttpStatus.OK)
+	                    .body(postagemRepository.save(postagem));
+	        
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema não existe!", null);
+	    }
+	    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	}
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable Long id) { 
-		Optional<Postagem> postagem = postagemRepository.findById(id); 
+	public void delete(@PathVariable Long id) {  
+		Optional<Postagem> postagem = postagemRepository.findById(id);  // Busca a postagem no repositório pelo ID recebido como parâmetro
 	
-	if(postagem.isEmpty())
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+	if(postagem.isEmpty()) // Verifica se a postagem existe ----> poderia usar o .map nesse caso tambem
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND); //lança uma exceção que retorna o status HTTP 404 (Not Found)
 	
 	postagemRepository.deleteById(id);
 }
