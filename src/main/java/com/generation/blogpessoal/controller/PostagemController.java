@@ -62,15 +62,14 @@ public class PostagemController{
 	
 	@PutMapping
 	public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem) {
-	    if (postagemRepository.existsById(postagem.getId())) {
+	    if (postagemRepository.existsById(postagem.getId())) { 
 	        
-	    	if (temaRepository.existsById(postagem.getTema().getId())) 
-	            return ResponseEntity.status(HttpStatus.OK)
-	                    .body(postagemRepository.save(postagem));
+	    	if (temaRepository.existsById(postagem.getTema().getId())) // Pega o ID e o TEMA e se tiver ele retorna o status 200OK 
+	            return ResponseEntity.status(HttpStatus.OK) .body(postagemRepository.save(postagem)); //
 	        
-	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema não existe!", null);
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema não existe!", null);//Se encontrar o id e o tema nao ele retorna o bad request 
 	    }
-	    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	    return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); //Se caso nao tiver nenhum ele retorna NOT FOUND
 	}
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
@@ -81,6 +80,6 @@ public class PostagemController{
 		throw new ResponseStatusException(HttpStatus.NOT_FOUND); //lança uma exceção que retorna o status HTTP 404 (Not Found)
 	
 	postagemRepository.deleteById(id);
-}
 
+	}
 }

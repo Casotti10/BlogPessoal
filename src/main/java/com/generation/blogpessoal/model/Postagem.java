@@ -39,6 +39,16 @@ public class Postagem {
 	@JsonIgnoreProperties("postagem") //Evita ciclos infinitos e problemas ao transformar objetos Java em JSON em relações bidirecionais.
 	private Tema tema;
 
+	@ManyToOne
+	@JsonIgnoreProperties("postagem")
+	private Usuario usuario;
+	
+	public Usuario getUsuario() {
+		return usuario;
+	}
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
 	public Long getId() {
 		return id;
 	}

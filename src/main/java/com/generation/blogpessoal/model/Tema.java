@@ -26,7 +26,7 @@ public class Tema {
 	private String descricao; 
 													//Cascade -> ao remover a entidade principal, as entidades relacionadas também serão removidas automaticamente do banco de dad				
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "tema", cascade = CascadeType.REMOVE) //Featch (So pra listar como os dados vao ser adicionado na colletction) 
-	@JsonIgnoreProperties("tema")//evita loop infinito			//mapedBy -> conectando o Tema.postagem com o Postagem.tema												//
+	@JsonIgnoreProperties("tema")  //evita loop infinito			//mapedBy -> conectando o Tema.postagem com o Postagem.tema												//
 	private List<Postagem> postagem; //Collection que a classe tema vai ter vinculada com a classe Postagens
 
 	public Long getId() {
