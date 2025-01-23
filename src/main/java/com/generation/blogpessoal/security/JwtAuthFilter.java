@@ -21,40 +21,50 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+
+//Define esta classe como um componente gerenciado pelo Spring.
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    @Autowired
+	 // Injeta o serviço responsável por manipular e validar tokens JWT.
+	@Autowired
     private JwtService jwtService;
 
-    @Autowired
+	 // Injeta o serviço que carrega os detalhes do usuário.
+	@Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    @Override
+	// Obtém o cabeçalho "Authorization" da requisição.
+	@Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         String token = null;
         String username = null;
     
         try{
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                token = authHeader.substring(7);
-                username = jwtService.extractUsername(token);
+            if (authHeader != null && authHeader.startsWith("Bearer ")) { // Verifica se o cabeçalho contém um token JWT válido (começando com "Bearer ").
+                token = authHeader.substring(7);// Remove o prefixo "Bearer " do token.
+                username = jwtService.extractUsername(token); // Extrai o nome do usuário do token.
             }
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+           // Verifica se o nome de usuário foi extraído e se o contexto de segurança está vazio.
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) { //Verifica se o nome de usuário foi extraído e se o contexto de segurança está vazio.
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username); //carrega os detalhes do usuario
                     
+             // Valida o token usando os detalhes do usuário.
                 if (jwtService.validateToken(token, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    // Associa os detalhes da requisição à autenticação.
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    SecurityContextHolder.getContext().setAuthentication(authToken);// Configura o contexto de segurança com a autenticação do usuário
                 }
             
             }
-            filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response); // Continua o processamento da requisição.
 
-        }catch(ExpiredJwtException | UnsupportedJwtException | MalformedJwtException 
+        }
+     // Em caso de erro com o token JWT, retorna um status HTTP 403 (FORBIDDEN).
+        catch(ExpiredJwtException | UnsupportedJwtException | MalformedJwtException 
                 | SignatureException | ResponseStatusException e){
             response.setStatus(HttpStatus.FORBIDDEN.value());
             return;

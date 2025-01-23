@@ -1,6 +1,13 @@
 package com.generation.blogpessoal.model;
 
-public class UsuarioLogin {
+public class UsuarioLogin {   
+	
+/*
+    UsuarioLogin é usada para armazenar as informações de login do usuário que são
+	necessárias para autenticação. 
+	UsuarioLogin é mais voltada para a manipulação temporária de 
+	dados durante o processo de login e autenticação.
+*/
 	
 	private Long id;
 	private String nome;
